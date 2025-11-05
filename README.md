@@ -95,6 +95,8 @@ int main() {
 ```
 
 **B. Explanation**
+
+`hungarian(n)` function
 1) Initialize
    - All potentials and path arrays start from zero.
 ```c
