@@ -14,74 +14,84 @@
 #include <stdio.h>
 #include <limits.h>
 
-#define N 4  // Size of the cost matrix
+#define MAXN 100
 
-int cost[N][N] = {
-    {9, 2, 7, 8},
-    {6, 4, 3, 7},
-    {5, 8, 1, 8},
-    {7, 6, 9, 4}
-};
+int cost[MAXN][MAXN];       // biaya asli
+int biased[MAXN][MAXN];     // biaya dibiaskan utk tie-break
+int u[MAXN+1], v[MAXN+1], p[MAXN+1], way[MAXN+1];
 
-int assignment[N];
+int hungarian(int n) {
+    for (int i = 0; i <= n; ++i) u[i] = v[i] = p[i] = way[i] = 0;
 
-void hungarian() {
-    int rowCover[N] = {0}, colCover[N] = {0};
-    int marked[N][N] = {0};
-    int i, j;
+    for (int i = 1; i <= n; i++) {
+        p[0] = i;
+        int j0 = 0;
+        int minv[MAXN+1];
+        char used[MAXN+1] = {0};
+        for (int j = 0; j <= n; j++) minv[j] = INT_MAX;
 
-    // Step 1: Subtract row minima
-    for (i = 0; i < N; i++) {
-        int min = cost[i][0];
-        for (j = 1; j < N; j++)
-            if (cost[i][j] < min)
-                min = cost[i][j];
-        for (j = 0; j < N; j++)
-            cost[i][j] -= min;
-    }
+        do {
+            used[j0] = 1;
+            int i0 = p[j0], delta = INT_MAX, j1 = 0;
 
-    // Step 2: Subtract column minima
-    for (j = 0; j < N; j++) {
-        int min = cost[0][j];
-        for (i = 1; i < N; i++)
-            if (cost[i][j] < min)
-                min = cost[i][j];
-        for (i = 0; i < N; i++)
-            cost[i][j] -= min;
-    }
-
-    // Step 3: Mark zeros
-    for (i = 0; i < N; i++) {
-        for (j = 0; j < N; j++) {
-            if (cost[i][j] == 0 && !rowCover[i] && !colCover[j]) {
-                marked[i][j] = 1;
-                rowCover[i] = 1;
-                colCover[j] = 1;
+            for (int j = 1; j <= n; j++) if (!used[j]) {
+                int cur = biased[i0-1][j-1] - u[i0] - v[j];
+                if (cur < minv[j]) { minv[j] = cur; way[j] = j0; }
+                if (minv[j] < delta || (minv[j] == delta && j > j1)) {
+                    delta = minv[j]; j1 = j;
+                }
             }
-        }
+
+            for (int j = 0; j <= n; j++) {
+                if (used[j]) { u[p[j]] += delta; v[j] -= delta; }
+                else { minv[j] -= delta; }
+            }
+            j0 = j1;
+        } while (p[j0] != 0);
+
+        do {
+            int j1 = way[j0];
+            p[j0] = p[j1];
+            j0 = j1;
+        } while (j0);
     }
 
-    // Step 4: Extract assignment
-    for (i = 0; i < N; i++) {
-        for (j = 0; j < N; j++) {
-            if (marked[i][j]) {
-                assignment[i] = j;
-                break;
-            }
-        }
+    int result = 0;
+    int assign_col_for_row[MAXN];
+    for (int j = 1; j <= n; j++) if (p[j]) {
+        assign_col_for_row[p[j]-1] = j-1;                
+        result += cost[p[j]-1][j-1];                     
     }
+
+    printf("\nPicked solution:\n");
+    for (int i = 0; i < n; i++) {
+        printf("Bulldozer %d : Construction site %d (%d km)\n",
+               i+1, assign_col_for_row[i]+1, cost[i][assign_col_for_row[i]]);
+    }
+    printf("Distance sum = %d km\n", result);
+    return result;
 }
 
 int main() {
-    hungarian();
+    int n;
+    scanf("%d", &n);
+    for (int i = 0; i < n; i++)
+        for (int j = 0; j < n; j++)
+            scanf("%d", &cost[i][j]);
 
-    printf("Optimal assignment:\n");
-    for (int i = 0; i < N; i++) {
-        printf("Worker %d assigned to Job %d (Cost: %d)\n", i, assignment[i], cost[i][assignment[i]]);
+
+    for (int i = 0; i < n; i++) {
+        int target = n - i;                
+        for (int j = 0; j < n; j++) {
+            int bonus = ((j+1) == target) ? 0 : 1;   
+            biased[i][j] = cost[i][j] * 1000 + bonus;
+        }
     }
 
+    hungarian(n);
     return 0;
 }
+
 ```
 
 **B. Explanation**
@@ -91,18 +101,21 @@ int main() {
 
 **Input**
 `
-9 2 7 8
-6 4 3 7
-5 8 1 8
-7 6 9 4
+4
+90 75 75 80
+35 85 55 65
+125 95 90 105
+45 110 95 115
 `
 
 **Output**
 `
-Worker 0 assigned to Job 1 (Cost: 0)
-Worker 1 assigned to Job 0 (Cost: 0)
-Worker 2 assigned to Job 2 (Cost: 0)
-Worker 3 assigned to Job 3 (Cost: 0)
+Picked solution:
+Bulldozer 1 : Construction site 4 (80 km)
+Bulldozer 2 : Construction site 3 (55 km)
+Bulldozer 3 : Construction site 2 (95 km)
+Bulldozer 4 : Construction site 1 (45 km)
+Distance sum = 275 km
 `
 
 
