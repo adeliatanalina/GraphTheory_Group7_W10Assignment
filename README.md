@@ -95,6 +95,97 @@ int main() {
 ```
 
 **B. Explanation**
+1) Step 1: Initialize
+   - All potentials and path arrays start from zero.
+```c
+for (int i = 1; i <= n; i++) {
+    p[0] = i;
+    int j0 = 0;
+    int minv[MAXN+1];
+    char used[MAXN+1] = {0};
+    for (int j = 0; j <= n; j++) minv[j] = INT_MAX;
+```
+
+2) Step 2: Process each row (worker)
+   - We insert one row (worker) at a time into the matching.
+   - `p[0]` is a dummy "starting column" for the current augmenting path.
+   - `minv[j]` keeps the smallest reduced cost seen so far for each column `j`.
+   - `used[j]` marks which columns are already visited.
+```c
+for (int i = 1; i <= n; i++) {
+    p[0] = i;
+    int j0 = 0;
+    int minv[MAXN+1];
+    char used[MAXN+1] = {0};
+    for (int j = 0; j <= n; j++) minv[j] = INT_MAX;
+```
+
+3) Step 3: Build the augmenting path
+   - `i0 = p[j0]` is the row currently assigned to column `j0`.
+   - For each unvisited column j, we compute the reduced cost using potentials.
+   - We keep track of the smallest cost `(minv[j])`.
+   - Tie-breaking rule: if two columns have equal reduced cost, pick the column with a larger index (`j > j1`) — this is how we make it prefer 4→3→2→1 pattern.
+```c
+do {
+    used[j0] = 1;
+    int i0 = p[j0], delta = INT_MAX, j1 = 0;
+
+    for (int j = 1; j <= n; j++) if (!used[j]) {
+        int cur = biased[i0-1][j-1] - u[i0] - v[j];
+        if (cur < minv[j]) { minv[j] = cur; way[j] = j0; }
+
+        if (minv[j] < delta || (minv[j] == delta && j > j1)) {
+            delta = minv[j]; j1 = j;
+        }
+    }
+```
+
+4) Step 4: Update potentials and distances
+   - This step adjusts all `u` and `v` so that at least one new reduced cost becomes zero, allowing the path to extend.
+   - The loop continues until we reach an unassigned column (`p[j0] == 0`).
+```c
+    for (int j = 0; j <= n; j++) {
+        if (used[j]) { u[p[j]] += delta; v[j] -= delta; }
+        else { minv[j] -= delta; }
+    }
+    j0 = j1;
+} while (p[j0] != 0);
+```
+
+5) Step 5: Reconstruct the path
+   - We backtrack the augmenting path using `way[]`, flipping the matched/unmatched edges to update the assignment.
+```c
+do {
+    int j1 = way[j0];
+    p[j0] = p[j1];
+    j0 = j1;
+} while (j0);
+```
+
+6) Step 6: Extract the result
+   - Now we have a complete matching.
+   - For each row, we store which column it’s matched to.
+   - We compute the total real cost using the original cost matrix (not the biased one).
+```c
+int result = 0;
+int assign_col_for_row[MAXN];
+for (int j = 1; j <= n; j++) if (p[j]) {
+    assign_col_for_row[p[j]-1] = j-1;
+    result += cost[p[j]-1][j-1];
+}
+```
+
+7) Step 7: Print the result
+   - 1-based printing (same as your slide).
+   - Total sum displayed at the end.
+```c
+for (int i = 0; i < n; i++) {
+    printf("Bulldozer %d : Construction site %d (%d km)\n",
+           i+1, assign_col_for_row[i]+1, cost[i][assign_col_for_row[i]]);
+}
+printf("Distance sum = %d km\n", result);
+```
+
 
 
 **C. Input-Output Sample**
