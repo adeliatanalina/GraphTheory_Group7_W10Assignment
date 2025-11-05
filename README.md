@@ -7,3 +7,8 @@
 | Embun Nabila Rasendriya Az Zahra  | 5025241009 | IUP |
 | Almira Nayla Felisitha  | 5025241014 | IUP |
 | Adelia Tanalina Yumna  | 5025241078 | IUP |
+
+## 1. Hungarian Algorithm
+
+
+## 1. Welsh-Powell Algorithm
