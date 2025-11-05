@@ -200,10 +200,10 @@ for (int i = 0; i < n; i++)
 9) Create the biased cost matrix
    - Multiply the cost by 1000 to keep differences between real costs dominant.
    - Add a bonus (0 or 1) as a tie-breaker:
-       - For each row i, only the “preferred” column (target) gets bonus = 0.
-       - All other columns get bonus = 1.
+       - For each row `i`, only the “preferred” column (`target`) gets `bonus = 0`.
+       - All other columns get `bonus = 1`.
    - So if two assignments have the same real total cost, the one that uses more “preferred” columns wins.
-   - This makes the algorithm pick exactly (1→4, 2→3, 3→2, 4→1).
+   - This makes the algorithm pick exactly `(1→4, 2→3, 3→2, 4→1)`.
 
 ```c
 for (int i = 0; i < n; i++) {
