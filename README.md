@@ -89,6 +89,21 @@ int main() {
 
 **C. Input-Output Sample**
 
+**Input**
+`
+9 2 7 8
+6 4 3 7
+5 8 1 8
+7 6 9 4
+`
+
+**Output**
+`
+Worker 0 assigned to Job 1 (Cost: 0)
+Worker 1 assigned to Job 0 (Cost: 0)
+Worker 2 assigned to Job 2 (Cost: 0)
+Worker 3 assigned to Job 3 (Cost: 0)
+`
 
 
 
@@ -290,4 +305,5 @@ void printColors() {
 
 **C. Input-Output Sample**
 
+**Input**
 
