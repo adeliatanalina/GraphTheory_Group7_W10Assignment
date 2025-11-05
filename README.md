@@ -100,23 +100,23 @@ int main() {
 **C. Input-Output Sample**
 
 **Input**
-`
+```
 4
 90 75 75 80
 35 85 55 65
 125 95 90 105
 45 110 95 115
-`
+```
 
 **Output**
-`
+```
 Picked solution:
 Bulldozer 1 : Construction site 4 (80 km)
 Bulldozer 2 : Construction site 3 (55 km)
 Bulldozer 3 : Construction site 2 (95 km)
 Bulldozer 4 : Construction site 1 (45 km)
 Distance sum = 275 km
-`
+```
 
 
 
