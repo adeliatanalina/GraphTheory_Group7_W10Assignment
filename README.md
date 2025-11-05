@@ -95,7 +95,7 @@ int main() {
 ```
 
 **B. Explanation**
-1) Step 1: Initialize
+1) Initialize
    - All potentials and path arrays start from zero.
 ```c
 for (int i = 1; i <= n; i++) {
@@ -106,7 +106,7 @@ for (int i = 1; i <= n; i++) {
     for (int j = 0; j <= n; j++) minv[j] = INT_MAX;
 ```
 
-2) Step 2: Process each row (worker)
+2) Process each row (worker)
    - We insert one row (worker) at a time into the matching.
    - `p[0]` is a dummy "starting column" for the current augmenting path.
    - `minv[j]` keeps the smallest reduced cost seen so far for each column `j`.
@@ -120,7 +120,7 @@ for (int i = 1; i <= n; i++) {
     for (int j = 0; j <= n; j++) minv[j] = INT_MAX;
 ```
 
-3) Step 3: Build the augmenting path
+3) Build the augmenting path
    - `i0 = p[j0]` is the row currently assigned to column `j0`.
    - For each unvisited column j, we compute the reduced cost using potentials.
    - We keep track of the smallest cost `(minv[j])`.
@@ -140,7 +140,7 @@ do {
     }
 ```
 
-4) Step 4: Update potentials and distances
+4) Update potentials and distances
    - This step adjusts all `u` and `v` so that at least one new reduced cost becomes zero, allowing the path to extend.
    - The loop continues until we reach an unassigned column (`p[j0] == 0`).
 ```c
@@ -152,7 +152,7 @@ do {
 } while (p[j0] != 0);
 ```
 
-5) Step 5: Reconstruct the path
+5) Reconstruct the path
    - We backtrack the augmenting path using `way[]`, flipping the matched/unmatched edges to update the assignment.
 ```c
 do {
@@ -162,7 +162,7 @@ do {
 } while (j0);
 ```
 
-6) Step 6: Extract the result
+6) Extract the result
    - Now we have a complete matching.
    - For each row, we store which column it’s matched to.
    - We compute the total real cost using the original cost matrix (not the biased one).
@@ -175,7 +175,7 @@ for (int j = 1; j <= n; j++) if (p[j]) {
 }
 ```
 
-7) Step 7: Print the result
+7) Print the result
    - 1-based printing (same as your slide).
    - Total sum displayed at the end.
 ```c
@@ -186,7 +186,39 @@ for (int i = 0; i < n; i++) {
 printf("Distance sum = %d km\n", result);
 ```
 
+The `main()` function
 
+8) Read input
+   - Reads the size and the original cost matrix.
+```c
+scanf("%d", &n);
+for (int i = 0; i < n; i++)
+    for (int j = 0; j < n; j++)
+        scanf("%d", &cost[i][j]);
+```
+
+9) Create the biased cost matrix
+   - Multiply the cost by 1000 to keep differences between real costs dominant.
+   - Add a bonus (0 or 1) as a tie-breaker:
+       - For each row i, only the “preferred” column (target) gets bonus = 0.
+       - All other columns get bonus = 1.
+   - So if two assignments have the same real total cost, the one that uses more “preferred” columns wins.
+   - This makes the algorithm pick exactly (1→4, 2→3, 3→2, 4→1).
+
+```c
+for (int i = 0; i < n; i++) {
+    int target = n - i; // For n=4: row0→4, row1→3, row2→2, row3→1
+    for (int j = 0; j < n; j++) {
+        int bonus = ((j+1) == target) ? 0 : 1;
+        biased[i][j] = cost[i][j] * 1000 + bonus;
+    }
+}
+```
+
+10) Run and print
+```c
+hungarian(n);
+```
 
 **C. Input-Output Sample**
 
