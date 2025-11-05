@@ -444,4 +444,21 @@ void printColors() {
 **C. Input-Output Sample**
 
 **Input**
+```
+Enter number of nodes: 5
+Enter adjacency matrix:
+0 1 1 0 0
+1 0 1 1 0
+1 1 0 1 1
+0 1 1 0 1
+0 0 1 1 0
+```
 
+**Output***
+```
+Node 0 -> Color 3
+Node 1 -> Color 2
+Node 2 -> Color 1
+Node 3 -> Color 3
+Node 4 -> Color 2
+```
